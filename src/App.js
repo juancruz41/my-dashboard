@@ -1,9 +1,15 @@
-import React, { Component } from 'react'
-import App from 'base-shell/lib'
-import _config from './config'
+import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from "./config/theme";  // Importa correctamente los temas definidos
+import Dashboard from "./dashboard/theme/Dashboard"; // Asegúrate que este componente esté correctamente cargado
 
-export default class Demo extends Component {
-  render() {
-    return <App config={_config} />
-  }
+function App() {
+  return (
+    <ThemeProvider theme={theme}>
+      {/* Aquí todo estará bajo el mismo tema con modo claro */}
+      <Dashboard />
+    </ThemeProvider>
+  );
 }
+
+export default App;
