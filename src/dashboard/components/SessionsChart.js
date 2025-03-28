@@ -7,6 +7,8 @@ import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import { LineChart } from '@mui/x-charts/LineChart';
+import { useState, useEffect } from 'react';
+import { getData } from '../../config/api'; // Asegúrate de importar la función de API
 
 function AreaGradient({ color, id }) {
   return (
@@ -41,7 +43,27 @@ function getDaysInMonth(month, year) {
 
 export default function SessionsChart() {
   const theme = useTheme();
-  const data = getDaysInMonth(4, 2024);
+  const [sessionsData, setSessionsData] = useState(null);  // State para guardar los datos de la API
+
+  // Fetching data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getData('sessions'); // Asumiendo que 'sessions' es el endpoint correcto
+        setSessionsData(data);  // Guardamos los datos de la API
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (!sessionsData) {
+    return <Typography>Cargando...</Typography>;  // Mientras se cargan los datos
+  }
+
+  const data = getDaysInMonth(4, 2024);  // Puedes cambiar este valor según sea necesario
 
   const colorPalette = [
     theme.palette.primary.light,
@@ -65,9 +87,9 @@ export default function SessionsChart() {
             }}
           >
             <Typography variant="h4" component="p">
-              13,277
+              {sessionsData.totalSessions} {/* Suponiendo que la API devuelve este valor */}
             </Typography>
-            <Chip size="small" color="success" label="+35%" />
+            <Chip size="small" color="success" label={sessionsData.trendLabel} /> {/* Suponiendo que la API devuelve la tendencia */}
           </Stack>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
             Sessions per day for the last 30 days
@@ -75,13 +97,7 @@ export default function SessionsChart() {
         </Stack>
         <LineChart
           colors={colorPalette}
-          xAxis={[
-            {
-              scaleType: 'point',
-              data,
-              tickInterval: (index, i) => (i + 1) % 5 === 0,
-            },
-          ]}
+          xAxis={[{ scaleType: 'point', data, tickInterval: (index, i) => (i + 1) % 5 === 0 }]}
           series={[
             {
               id: 'direct',
@@ -91,11 +107,7 @@ export default function SessionsChart() {
               stack: 'total',
               area: true,
               stackOrder: 'ascending',
-              data: [
-                300, 900, 600, 1200, 1500, 1800, 2400, 2100, 2700, 3000, 1800, 3300,
-                3600, 3900, 4200, 4500, 3900, 4800, 5100, 5400, 4800, 5700, 6000,
-                6300, 6600, 6900, 7200, 7500, 7800, 8100,
-              ],
+              data: sessionsData.direct, // Datos dinámicos de la API
             },
             {
               id: 'referral',
@@ -105,11 +117,7 @@ export default function SessionsChart() {
               stack: 'total',
               area: true,
               stackOrder: 'ascending',
-              data: [
-                500, 900, 700, 1400, 1100, 1700, 2300, 2000, 2600, 2900, 2300, 3200,
-                3500, 3800, 4100, 4400, 2900, 4700, 5000, 5300, 5600, 5900, 6200,
-                6500, 5600, 6800, 7100, 7400, 7700, 8000,
-              ],
+              data: sessionsData.referral, // Datos dinámicos de la API
             },
             {
               id: 'organic',
@@ -118,11 +126,7 @@ export default function SessionsChart() {
               curve: 'linear',
               stack: 'total',
               stackOrder: 'ascending',
-              data: [
-                1000, 1500, 1200, 1700, 1300, 2000, 2400, 2200, 2600, 2800, 2500,
-                3000, 3400, 3700, 3200, 3900, 4100, 3500, 4300, 4500, 4000, 4700,
-                5000, 5200, 4800, 5400, 5600, 5900, 6100, 6300,
-              ],
+              data: sessionsData.organic, // Datos dinámicos de la API
               area: true,
             },
           ]}

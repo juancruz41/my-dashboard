@@ -6,9 +6,32 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { useTheme } from '@mui/material/styles';
+import { useState, useEffect } from 'react';
+import { getData } from '../../config/api'; // Asegúrate de importar la función de la API
 
 export default function PageViewsBarChart() {
   const theme = useTheme();
+  const [chartData, setChartData] = useState(null); // Estado para los datos de la API
+
+  // Cargar los datos desde la API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getData('pageviews'); // Endpoint que devuelve los datos de las visualizaciones
+        setChartData(data); // Guardamos los datos obtenidos
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Si los datos aún no están disponibles, mostramos un mensaje de "Cargando..."
+  if (!chartData) {
+    return <Typography>Cargando...</Typography>;
+  }
+
   const colorPalette = [
     (theme.vars || theme).palette.primary.dark,
     (theme.vars || theme).palette.primary.main,
@@ -31,9 +54,9 @@ export default function PageViewsBarChart() {
             }}
           >
             <Typography variant="h4" component="p">
-              1.3M
+              {chartData.totalPageViews} {/* Mostramos el total de las visualizaciones de la API */}
             </Typography>
-            <Chip size="small" color="error" label="-8%" />
+            <Chip size="small" color="error" label={chartData.trendLabel} /> {/* Tendencia de la API */}
           </Stack>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
             Page views and downloads for the last 6 months
@@ -42,30 +65,28 @@ export default function PageViewsBarChart() {
         <BarChart
           borderRadius={8}
           colors={colorPalette}
-          xAxis={[
-            {
-              scaleType: 'band',
-              categoryGapRatio: 0.5,
-              data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-            },
-          ]}
+          xAxis={[{
+            scaleType: 'band',
+            categoryGapRatio: 0.5,
+            data: chartData.months,  // Suponiendo que la API devuelve los meses
+          }]}
           series={[
             {
               id: 'page-views',
               label: 'Page views',
-              data: [2234, 3872, 2998, 4125, 3357, 2789, 2998],
+              data: chartData.pageViews,  // Datos de visualizaciones de la API
               stack: 'A',
             },
             {
               id: 'downloads',
               label: 'Downloads',
-              data: [3098, 4215, 2384, 2101, 4752, 3593, 2384],
+              data: chartData.downloads,  // Datos de descargas de la API
               stack: 'A',
             },
             {
               id: 'conversions',
               label: 'Conversions',
-              data: [4051, 2275, 3129, 4693, 3904, 2038, 2275],
+              data: chartData.conversions,  // Datos de conversiones de la API
               stack: 'A',
             },
           ]}

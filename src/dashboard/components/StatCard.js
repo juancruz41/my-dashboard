@@ -9,6 +9,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { SparkLineChart } from '@mui/x-charts/SparkLineChart';
 import { areaElementClasses } from '@mui/x-charts/LineChart';
+import { useState, useEffect } from 'react';
+import { getData } from '../../config/api'; // Asegúrate de tener esta función que obtiene los datos de la API
 
 function getDaysInMonth(month, year) {
   const date = new Date(year, month, 0);
@@ -43,7 +45,11 @@ AreaGradient.propTypes = {
 
 function StatCard({ title, value, interval, trend, data }) {
   const theme = useTheme();
-  const daysInWeek = getDaysInMonth(4, 2024);
+  const [apiData, setApiData] = useState(null); // Estado para los datos de la API
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [error, setError] = useState(null); // Estado para manejar errores
+
+  const daysInWeek = getDaysInMonth(4, 2024); // Se puede adaptar si se necesita obtener un conjunto diferente de días
 
   const trendColors = {
     up:
@@ -70,6 +76,31 @@ function StatCard({ title, value, interval, trend, data }) {
   const chartColor = trendColors[trend];
   const trendValues = { up: '+25%', down: '-25%', neutral: '+5%' };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getData('stats'); // Cambiar el endpoint según la API
+        setApiData(data); // Guardamos los datos obtenidos
+        setLoading(false); // Terminamos la carga
+      } catch (error) {
+        setError('Error al obtener los datos de la API');
+        setLoading(false); // Terminamos la carga incluso si hay error
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Si hay un error al obtener los datos
+  if (error) {
+    return <Typography color="error">{error}</Typography>;
+  }
+
+  // Si los datos están cargando
+  if (loading) {
+    return <Typography>Cargando...</Typography>;
+  }
+
   return (
     <Card variant="outlined" sx={{ height: '100%', flexGrow: 1 }}>
       <CardContent>
@@ -86,7 +117,7 @@ function StatCard({ title, value, interval, trend, data }) {
               sx={{ justifyContent: 'space-between', alignItems: 'center' }}
             >
               <Typography variant="h4" component="p">
-                {value}
+                {apiData.value} {/* Valor obtenido de la API */}
               </Typography>
               <Chip size="small" color={color} label={trendValues[trend]} />
             </Stack>
@@ -97,13 +128,13 @@ function StatCard({ title, value, interval, trend, data }) {
           <Box sx={{ width: '100%', height: 50 }}>
             <SparkLineChart
               colors={[chartColor]}
-              data={data}
+              data={apiData.chartData} {/* Datos del gráfico obtenidos de la API */}
               area
               showHighlight
               showTooltip
               xAxis={{
                 scaleType: 'band',
-                data: daysInWeek, // Use the correct property 'data' for xAxis
+                data: daysInWeek, // Usamos los días obtenidos
               }}
               sx={{
                 [`& .${areaElementClasses.root}`]: {
