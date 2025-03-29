@@ -11,7 +11,7 @@ import HighlightedCard from './HighlightedCard';
 import PageViewsBarChart from './PageViewsBarChart';
 import SessionsChart from './SessionsChart';
 import StatCard from './StatCard';
-import { getData } from '../config/api'; // ✅ Importamos la función corregida de la API
+import { getData } from '../../config/api'; // ✅ Importamos la función corregida de la API
 
 const defaultData = [
   {
