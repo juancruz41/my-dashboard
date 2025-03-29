@@ -16,6 +16,7 @@
     "@react-spring/web": "^9.7.5",
     "base-shell": "^2.5.14",
     "dayjs": "^1.11.13",
+    "firebase": "^11.5.0",
     "intl": "^1.2.5",
     "jss-rtl": "^0.3.0",
     "lp-react-virtualized-auto-sizer-react-18": "^1.0.7",
