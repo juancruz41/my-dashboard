@@ -126,9 +126,10 @@ function StatCard({ title, value, interval, trend, data }) {
             </Typography>
           </Stack>
           <Box sx={{ width: '100%', height: 50 }}>
+            // Datos del gráfico obtenidos de la API
             <SparkLineChart
               colors={[chartColor]}
-              data={apiData.chartData} {/* Datos del gráfico obtenidos de la API */}
+              data={apiData.chartData} 
               area
               showHighlight
               showTooltip
