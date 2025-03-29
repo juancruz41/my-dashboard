@@ -117,7 +117,7 @@ function StatCard({ title, value, interval, trend, data }) {
               sx={{ justifyContent: 'space-between', alignItems: 'center' }}
             >
               <Typography variant="h4" component="p">
-                {apiData.value} {/* Valor obtenido de la API */}
+                {apiData.value} 
               </Typography>
               <Chip size="small" color={color} label={trendValues[trend]} />
             </Stack>
@@ -126,7 +126,6 @@ function StatCard({ title, value, interval, trend, data }) {
             </Typography>
           </Stack>
           <Box sx={{ width: '100%', height: 50 }}>
-            // Datos del gráfico obtenidos de la API
             <SparkLineChart
               colors={[chartColor]}
               data={apiData.chartData} 
