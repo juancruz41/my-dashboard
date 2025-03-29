@@ -11,9 +11,9 @@ import HighlightedCard from './HighlightedCard';
 import PageViewsBarChart from './PageViewsBarChart';
 import SessionsChart from './SessionsChart';
 import StatCard from './StatCard';
-import { getData } from '../config/api'; // Importamos la función de la API
+import { getData } from '../config/api'; // ✅ Importamos la función corregida de la API
 
-const data = [
+const defaultData = [
   {
     title: 'Users',
     value: '14k',
@@ -51,15 +51,26 @@ export default function MainGrid() {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const data = await getData('stats'); // Llamada a la API: "https://tu-api.com/api/stats"
-      if (data) setStats(data);  // Almacenamos los datos de la API
+      try {
+        const data = await getData();
+        console.log("Datos de la API:", data); // ✅ Verifica los datos en la consola
+        if (data) {
+          setStats(data);
+        } else {
+          setStats(defaultData); // ✅ Si la API falla, usa datos por defecto
+        }
+      } catch (error) {
+        console.error("Error al obtener datos:", error);
+        setStats(defaultData); // ✅ En caso de error, muestra datos de prueba
+      }
     };
+
     fetchStats();
   }, []);
 
   return (
     <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
-      {/* cards */}
+      {/* Sección de tarjetas */}
       <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
         Overview
       </Typography>
@@ -84,6 +95,7 @@ export default function MainGrid() {
         </Grid>
       </Grid>
 
+      {/* Sección de detalles */}
       <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
         Details
       </Typography>
