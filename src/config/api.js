@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://dashboard-api-coral.vercel.app/"; // Cambia con tu URL real
+const API_BASE_URL = process.env.REACT_APP_API_URL || "https://dashboard-api-coral.vercel.app"; // Cambia con tu URL real
 
 const fetchData = async (endpoint, options = {}) => {
   try {
